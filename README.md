@@ -7,4 +7,4 @@ qiushibaike-day.recipe：抓取糗事百科24小时的糗事
 
 qiushibaike-week.recipe：抓取糗事百科一周的糗事
 
-[recipe howto]: 
+[recipe howto]: http://richardustc.github.io/blog/2013/06/calibre-recipe-howto/
