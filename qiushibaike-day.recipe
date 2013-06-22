@@ -1,0 +1,39 @@
+import string, re
+from calibre import strftime
+from calibre.web.feeds.recipes import BasicNewsRecipe
+from calibre.ebooks.BeautifulSoup import BeautifulSoup
+
+# -*- encodeing: utf-8 -*-
+baseUrl = "http://www.qiushibaike.com/hot/page/"
+class QiuShiBaiKe(BasicNewsRecipe):
+    __author__  = '糗事百科'
+    description = '糗事百科'
+    publisher = "糗事百科"
+    title = "糗事百科"
+    timefmt = '-%Y-%m-%d'
+
+    keep_only_tags = [dict(name='div', attrs={'id':re.compile("qiushi_tag_\d+")})]
+    auto_cleanup = True
+
+    def parse_index(self):
+        soup = self.index_to_soup(baseUrl+"1")
+
+        # get the largest page number
+        pagebar = soup.find("div", {"class":"pagebar"})
+        anchors = pagebar.findAll("a")
+        largest_page_number = 1
+        for anchor in anchors:
+            if anchor.string.isdigit():
+                if int(anchor.string) > largest_page_number:
+                    largest_page_number = int(anchor.string)
+
+        article_list = []
+        for page_number in range(1, largest_page_number+1):
+            article = {
+                "title": "第%d页" % page_number,
+                "url": baseUrl+str(page_number),
+                "description": "",
+                "content":""
+            }
+            article_list.append(article)
+        return [(self.title, article_list)]
