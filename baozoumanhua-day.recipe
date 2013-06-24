@@ -1,0 +1,40 @@
+import string, re
+from calibre import strftime
+from calibre.web.feeds.recipes import BasicNewsRecipe
+from calibre.ebooks.BeautifulSoup import BeautifulSoup
+
+# -*- encodeing: utf-8 -*-
+baseUrl = "http://baozoumanhua.com/groups/1/hottest/day/page/"
+class BaoZouManHua(BasicNewsRecipe):
+    __author__  = '暴走漫画'
+    description = '暴走漫画'
+    publisher = "暴走漫画"
+    title = "暴走漫画"
+    timefmt = '-%Y-%m-%d'
+
+    keep_only_tags = [dict(name='div', attrs={'class':'img-wrap'})]
+    remove_tags = [dict(name='div', attrs={'class':'plus-accessories'})]
+    scale_news_images_to_device = False
+
+    def parse_index(self):
+        soup = self.index_to_soup(baseUrl+"1")
+
+        # get the largest page number
+        pagebar = soup.find("div", {"class":"pagebar"})
+        anchors = pagebar.findAll("a")
+        largest_page_number = 1
+        for anchor in anchors:
+            if anchor.string.isdigit():
+                if int(anchor.string) > largest_page_number:
+                    largest_page_number = int(anchor.string)
+
+        article_list = []
+        for page_number in range(1, largest_page_number+1):
+            article = {
+                "title": "第%d页" % page_number,
+                "url": baseUrl+str(page_number),
+                "description": "",
+                "content":""
+            }
+            article_list.append(article)
+        return [(self.title, article_list)]
